@@ -1,0 +1,67 @@
+# Inventario de lo que usás. Editá `installed` con las versiones REALES de tus servidores.
+# - installed vacío  -> se avisa de todo el producto (sin saber si te afecta).
+# - installed con versiones -> el resultado dice "Te afecta: SÍ / NO" y, si NO te afecta, no se alerta.
+# - cpes: prefijos CPE de NVD; keywords: regex para CVEs que NVD todavía no analizó.
+# - only_kev: true -> solo avisa si CISA confirma explotación activa (para productos muy ruidosos).
+
+min_alert_level: alto        # nivel mínimo para Telegram: bajo | medio | alto | crítico
+digest_days: 7               # ventana del resumen por mail
+
+products:
+  - name: PHP
+    installed: []            # ej: ["8.2.12", "8.3.4"]
+    cpes: ["cpe:2.3:a:php:php:"]
+    keywords: ['(?<![\w-])PHP(?:-FPM|-CGI)?\s+(?:versions?\s+)?(?:from\s+)?(?:before|prior|through|\d)', 'php-src']
+
+  - name: MySQL
+    installed: []            # ej: ["8.0.35"]
+    cpes: ["cpe:2.3:a:oracle:mysql:"]
+    keywords: ['\bMySQL Server\b']
+
+  - name: MariaDB
+    installed: []            # ej: ["10.11.6"]
+    cpes: ["cpe:2.3:a:mariadb:mariadb:"]
+    keywords: ['(?<![\w-])MariaDB (?:Server )?(?:before|prior|through|versions?|\d)']
+
+  - name: PostgreSQL
+    installed: []            # ej: ["15.5"]
+    cpes: ["cpe:2.3:a:postgresql:postgresql:"]
+    keywords: ['(?<![\w-])PostgreSQL (?:before|prior|through|versions?|\d)', '^.{0,60}(?<![\w-])PostgreSQL(?![\w-])']
+
+  - name: nginx
+    installed: []            # ej: ["1.24.0"]
+    cpes: ["cpe:2.3:a:f5:nginx:", "cpe:2.3:a:nginx:nginx:"]
+    keywords: ['(?<![\w-])nginx(?![\w-])', 'ngx_http']
+
+  - name: Node.js
+    installed: []            # ej: ["20.11.0"]
+    cpes: ["cpe:2.3:a:nodejs:node.js:"]
+    keywords: ['(?<![\w-])Node\.js (?:v?\d|before|prior|through|versions?)']
+
+  - name: Apache HTTP Server
+    installed: []            # ej: ["2.4.58"]
+    cpes: ["cpe:2.3:a:apache:http_server:"]
+    keywords: ['Apache HTTP Server']
+
+  - name: Docker
+    installed: []            # ej: ["24.0.7"]
+    cpes: ["cpe:2.3:a:docker:docker:", "cpe:2.3:a:mobyproject:moby:", "cpe:2.3:a:linuxfoundation:runc:"]
+    keywords: ['\bDocker (?:Engine|Desktop)\b', '(?<![\w-])moby(?![\w-])', '(?<![\w-])runc(?![\w-])']
+
+  - name: Linux (kernel)
+    installed: []
+    only_kev: true           # el kernel tiene cientos de CVEs: solo los explotados activamente
+    cpes: ["cpe:2.3:o:linux:linux_kernel:"]
+    keywords: ['\bLinux kernel\b']
+
+  - name: Laravel
+    installed: []            # ej: ["10.48.0"]
+    cpes: ["cpe:2.3:a:laravel:laravel:", "cpe:2.3:a:laravel:framework:"]
+    keywords: ['(?<![\w-])Laravel (?:Framework )?(?:before|prior|through|versions?|\d)']
+    packages:                # además consulta GitHub Security Advisories
+      - {ecosystem: composer, name: laravel/framework}
+
+  - name: WordPress
+    installed: []            # ej: ["6.4.2"]
+    cpes: ["cpe:2.3:a:wordpress:wordpress:"]
+    keywords: ['WordPress Core', '^\s*WordPress (?:before|prior|through|\d)']
